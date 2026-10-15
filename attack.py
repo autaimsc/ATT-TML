@@ -36,7 +36,8 @@ if __name__ == '__main__':
 
     # Main
     all_loss_info = {}
-    for batch_idx, batch_data in tqdm(enumerate(data_loader)):
+    # for batch_idx, batch_data in tqdm(enumerate(data_loader), total=len(data_loader)):
+    for batch_idx, batch_data in enumerate(data_loader):
         batch_x = batch_data[0]
         batch_y = batch_data[1]
         batch_name = batch_data[3]

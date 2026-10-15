@@ -78,7 +78,7 @@ def verify(model_name, path, adv_path, batch_size, name_to_class_ids_file):
         with torch.no_grad():
             sum += (model(batch_x)[0].argmax(1) != batch_y+1).detach().sum().cpu().item()
 
-    print(model_name + '  acu = {:.1%}'.format(sum / 1000.0))
+    print(model_name + '  asr = {:.1%}'.format(sum / len(dataset)))
 
 def main():
     args = arg_parse()

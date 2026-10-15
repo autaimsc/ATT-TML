@@ -1,0 +1,11 @@
+__pycache__/
+previous_results/
+models/
+logs/
+TML_Project.tgz
+.venv/
+.vscode/
+.idea/
+advimages/
+all_test_images/
+clean_resized_images/

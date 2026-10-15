@@ -59,5 +59,5 @@ if __name__ == '__main__':
     for i in range(len(df['pre'])):
         if df['pre'][i] != df['gt'][i]:
             success_count += 1
-    print("Attack Success Rate for {0} : {1:.1f}%".format(args.target_model, success_count / 1000. * 100))
+    print("Attack Success Rate for {0} : {1:.1f}%".format(args.target_model, success_count / len(dataset) * 100))
 

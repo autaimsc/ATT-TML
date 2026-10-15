@@ -7,6 +7,8 @@ import random
 from torchvision import transforms
 from dataset import params
 from model import get_model
+from augmentation import random_neighbor_patch_swap
+from utils import feature_map_to_patch_importance
 
 
 class BaseAttack(object):
@@ -413,6 +415,8 @@ class ATT(BaseAttack):
         GF_patchs_t = self.norm_patchs(GF, self.patch_index, self.size, self.scale, self.offset)
         GF_patchs_start = torch.ones_like(GF_patchs_t).cuda() * 0.99
         GF_offset = (GF_patchs_start - GF_patchs_t) / self.steps
+        patch_importance = feature_map_to_patch_importance(GF_patchs_t)
+        update_offset = ((0.5 - 0) / self.steps) * patch_importance
 
         loss = nn.CrossEntropyLoss()
 
@@ -440,7 +444,9 @@ class ATT(BaseAttack):
             torch.manual_seed(i)
             random_patch = torch.rand(14, 14).repeat_interleave(16).reshape(14,14*16).repeat(1,16).reshape(224,224).cuda()
             GF_patchs = torch.where(torch.as_tensor(random_patch > GF_patchs_start - GF_offset * (i + 1)), 0., 1.).cuda()
-            outputs = self.model((self._sub_mean_div_std(unnorm_inps + perts * GF_patchs.detach())))
+            swapped_perts = random_neighbor_patch_swap(perts, swap_prob=update_offset)
+            outputs = self.model((self._sub_mean_div_std(unnorm_inps + swapped_perts * GF_patchs.detach())))
+            # outputs = self.model((self._sub_mean_div_std(unnorm_inps + swapped_perts)))
             cost = self.loss_flag * loss(outputs, labels).cuda()
             cost.backward()
             grad = perts.grad.data
